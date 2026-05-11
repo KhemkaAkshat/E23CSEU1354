@@ -1,6 +1,6 @@
-const STACKS = ["backend", "frontend"];
+export const STACKS = ["backend", "frontend"];
 
-const LEVELS = [
+export const LEVELS = [
   "debug",
   "info",
   "warn",
@@ -8,7 +8,7 @@ const LEVELS = [
   "fatal",
 ];
 
-const PACKAGES = [
+export const PACKAGES = [
   "cache",
   "controller",
   "cron_job",
@@ -18,22 +18,14 @@ const PACKAGES = [
   "repository",
   "route",
   "service",
-
   "api",
   "component",
   "hook",
   "page",
   "state",
   "style",
-
   "auth",
   "config",
   "middleware",
   "utils",
 ];
-
-module.exports = {
-  STACKS,
-  LEVELS,
-  PACKAGES,
-};
