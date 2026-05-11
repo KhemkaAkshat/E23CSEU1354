@@ -342,3 +342,106 @@ WHERE id = 'notif_101';
 # Conclusion
 
 The database design focuses on scalability and fast notification retrieval using indexing, pagination, and caching techniques.
+
+# Stage 3
+
+## Query Optimization
+
+The following query is used to fetch unread notifications for a student:
+
+```sql
+SELECT *
+FROM notifications
+WHERE student_id = 1042
+AND is_read = FALSE
+ORDER BY created_at ASC;
+```
+
+---
+
+# Problem with the Query
+
+If the notifications table contains millions of records, this query may become slow because the database has to search through a large amount of data.
+
+The main issues are:
+
+1. Full table scan can occur.
+2. Filtering unread notifications becomes slower.
+3. Sorting notifications by timestamp also increases query time.
+
+---
+
+# Optimization Using Indexing
+
+To improve performance, a composite index can be created on frequently searched columns.
+
+```sql
+CREATE INDEX idx_notifications
+ON notifications(student_id, is_read, created_at);
+```
+
+---
+
+# Why This Index Helps
+
+The query mainly depends on:
+
+1. student_id
+2. is_read
+3. created_at
+
+The composite index stores these fields in sorted order, which helps the database fetch matching rows much faster.
+
+---
+
+# Additional Improvements
+
+## Pagination
+
+Instead of loading all notifications together:
+
+```sql
+LIMIT 10;
+```
+
+can be used to fetch notifications in smaller batches.
+
+---
+
+## Caching
+
+Unread notification counts can be cached using Redis to reduce repeated database queries.
+
+---
+
+## Archiving Old Notifications
+
+Very old notifications can be moved to archive tables to keep the main table smaller and faster.
+
+---
+
+# Time Complexity
+
+## Without Indexing
+
+```txt
+O(n)
+```
+
+The database checks all rows.
+
+---
+
+## With Indexing
+
+```txt
+O(log n)
+```
+
+The database can directly locate matching records using the index.
+
+---
+
+# Conclusion
+
+Using indexing, pagination, and caching helps improve notification query performance and reduces database load when the system scales to large numbers of users and notifications.
