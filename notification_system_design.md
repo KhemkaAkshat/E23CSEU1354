@@ -469,3 +469,34 @@ Another enhancement technique is implementing lazy loading, meaning that outdate
 WebSockets or Socket.IO would be better alternatives for providing real-time notifications compared to repetitive API calls.
 
 Tasks such as email or push notifications should be handled by background workers to prevent any delays within the primary server.
+
+# Stage 5
+
+The current notification system sends notifications one by one.
+
+```python
+for student in students:
+    send_email(student)
+    save_notification(student)
+    send_push_notification(student)
+```
+
+This approach works fine for a small number of users, but it becomes slow when notifications need to be sent to thousands of students at the same time. Since every task is processed sequentially, the total execution time increases a lot. If sending one notification becomes slow or fails, the remaining notifications may also get delayed.
+
+To improve this system, queue-based processing can be used.
+
+### Approach
+
+1. When a notification request comes, the backend should add the task to a queue instead of processing it immediately.
+
+2. Background worker services can process notifications from the queue separately.
+
+3. Different workers can handle different tasks such as sending emails, storing notifications in the database, and sending push notifications.
+
+4. Retry mechanisms can be added so failed notifications are processed again automatically.
+
+5. Multiple workers can run in parallel which improves scalability and reduces processing time.
+
+Technologies like RabbitMQ or Kafka can be used for implementing queues.
+
+This approach makes the notification system faster, more reliable, and scalable for handling large numbers of users.
