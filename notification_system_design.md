@@ -445,3 +445,27 @@ The database engine locates matching rows with the help of an index.
 # Conclusion
 
 Indexing, pagination, and caching make it possible to optimize notifications’ queries and minimize the load on the database when it gets larger.
+
+# Stage 4
+
+When the notification system scales to serve many users, it may begin to experience performance problems since each query goes straight to the database.
+
+For instance, when a lot of students keep refreshing their notifications on a frequent basis, the database will get overloaded and API calls may be delayed.
+
+One solution to this problem could be utilizing Redis caching. The frequently accessed information such as the count of unread notifications or recently updated ones could be retrieved from cache rather than making constant calls to the database.
+
+Pagination should be applied as well to ensure that only a few notifications are retrieved at once.
+
+Example:
+
+```txt
+?page=1&limit=10
+```
+
+By doing so, fewer responses will be delivered and it will be quicker for the user to access the information.
+
+Another enhancement technique is implementing lazy loading, meaning that outdated notifications will not be retrieved until the user scrolls down the page.
+
+WebSockets or Socket.IO would be better alternatives for providing real-time notifications compared to repetitive API calls.
+
+Tasks such as email or push notifications should be handled by background workers to prevent any delays within the primary server.
