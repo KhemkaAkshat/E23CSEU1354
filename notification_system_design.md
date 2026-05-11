@@ -241,3 +241,104 @@ WebSockets or Socket.io can be employed to facilitate real-time notifications.
 # Conclusion
 
 The above API design is scalable and maintainable with CRUD functionality, pagination, authentication, and real-time communication capabilities.
+
+# Stage 2
+
+## Database Design
+
+For this system, PostgreSQL is used because notifications require filtering, sorting, pagination, and indexing. Since the data is structured, a relational database works well for storing notifications efficiently.
+
+---
+
+# Notifications Table
+
+```sql
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY,
+    student_id INT NOT NULL,
+    title VARCHAR(255),
+    message TEXT,
+    notification_type VARCHAR(50),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+---
+
+# Important Fields
+
+| Column | Purpose |
+|---|---|
+| id | Unique notification ID |
+| student_id | Student receiving notification |
+| notification_type | Placement, Result, Event |
+| is_read | Read/unread status |
+| created_at | Notification timestamp |
+
+---
+
+# Possible Scaling Problems
+
+1. Slow queries when notifications become very large.
+2. High database load during peak usage.
+3. Slower pagination on millions of records.
+
+---
+
+# Optimizations
+
+## Indexing
+
+```sql
+CREATE INDEX idx_student_id
+ON notifications(student_id);
+```
+
+This improves notification fetching speed.
+
+---
+
+## Pagination
+
+```txt
+?page=1&limit=10
+```
+
+Pagination prevents loading too much data at once.
+
+---
+
+## Redis Caching
+
+Unread counts and recent notifications can be cached to reduce database load.
+
+---
+
+# Example Queries
+
+## Fetch Notifications
+
+```sql
+SELECT *
+FROM notifications
+WHERE student_id = 1042
+ORDER BY created_at DESC
+LIMIT 10;
+```
+
+---
+
+## Mark Notification as Read
+
+```sql
+UPDATE notifications
+SET is_read = TRUE
+WHERE id = 'notif_101';
+```
+
+---
+
+# Conclusion
+
+The database design focuses on scalability and fast notification retrieval using indexing, pagination, and caching techniques.
