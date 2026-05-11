@@ -500,3 +500,50 @@ To improve this system, queue-based processing can be used.
 Technologies like RabbitMQ or Kafka can be used for implementing queues.
 
 This approach makes the notification system faster, more reliable, and scalable for handling large numbers of users.
+
+# Stage 6
+
+When it comes to priority inbox functionality, notifications must not be displayed solely depending on time. It would be better for important notifications like placement or unread notifications to be shown on top.
+
+To implement that, it is possible to introduce a priority score for each notification.
+
+### Method
+
+1. Notifications for placements could have the maximum priority.
+
+2. Notifications regarding results may have medium priority.
+
+3. Notifications for general events could have a lower priority.
+
+4. Unread notifications should be shown earlier than read notifications.
+
+5. Recently received notifications should be shown earlier than old notifications if their priorities are equal.
+
+Example priority calculation:
+
+```js
+function getPriority(notification) {
+    let score = 0;
+
+    switch (notification.type) {
+        case "Placement":
+            score += 3;
+            break;
+
+        case "Result":
+            score += 2;
+            break;
+
+        default:
+            score += 1;
+    }
+
+    if (!notification.isRead) score += 2;
+
+    return score;
+}
+```
+
+Afterwards, notifications could be sorted by priority score and then displayed in the front end application.
+
+That will allow users to see important notifications immediately without having to check all messages manually.
