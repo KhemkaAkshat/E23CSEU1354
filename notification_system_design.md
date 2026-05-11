@@ -347,7 +347,7 @@ The database design focuses on scalability and fast notification retrieval using
 
 ## Query Optimization
 
-The following query is used to fetch unread notifications for a student:
+The below SQL query returns notifications for a student that he or she hasn’t read yet.
 
 ```sql
 SELECT *
@@ -361,19 +361,19 @@ ORDER BY created_at ASC;
 
 # Problem with the Query
 
-If the notifications table contains millions of records, this query may become slow because the database has to search through a large amount of data.
+When the number of notifications increases up to millions, the query starts to run slowly because the database engine searches through an extensive set of records.
 
-The main issues are:
+Potential problems include:
 
-1. Full table scan can occur.
-2. Filtering unread notifications becomes slower.
-3. Sorting notifications by timestamp also increases query time.
+1. The database might do a full table scan.
+2. It might take more time to filter unread notifications.
+3. The database needs to sort the records by timestamps.
 
 ---
 
 # Optimization Using Indexing
 
-To improve performance, a composite index can be created on frequently searched columns.
+For better performance, we can add an index on the columns that the database frequently searches through.
 
 ```sql
 CREATE INDEX idx_notifications
@@ -382,41 +382,41 @@ ON notifications(student_id, is_read, created_at);
 
 ---
 
-# Why This Index Helps
+# Why This Index Helps?
 
-The query mainly depends on:
+The query relies mostly on:
 
-1. student_id
-2. is_read
-3. created_at
+1. `student_id`
+2. `is_read`
+3. `created_at`
 
-The composite index stores these fields in sorted order, which helps the database fetch matching rows much faster.
+As a result, adding an index on these columns will speed up the fetching process.
 
 ---
 
-# Additional Improvements
+# Other Ways to Optimize
 
 ## Pagination
 
-Instead of loading all notifications together:
+We can paginate results to avoid loading all the data at once.
 
 ```sql
 LIMIT 10;
 ```
 
-can be used to fetch notifications in smaller batches.
+It allows us to request notifications in chunks of ten.
 
 ---
 
 ## Caching
 
-Unread notification counts can be cached using Redis to reduce repeated database queries.
+We can use Redis to cache the unread notifications count and reduce the database engine’s workload.
 
 ---
 
 ## Archiving Old Notifications
 
-Very old notifications can be moved to archive tables to keep the main table smaller and faster.
+It’s reasonable to store old notifications in archive tables.
 
 ---
 
@@ -428,7 +428,7 @@ Very old notifications can be moved to archive tables to keep the main table sma
 O(n)
 ```
 
-The database checks all rows.
+The database has to check all records.
 
 ---
 
@@ -438,10 +438,10 @@ The database checks all rows.
 O(log n)
 ```
 
-The database can directly locate matching records using the index.
+The database engine locates matching rows with the help of an index.
 
 ---
 
 # Conclusion
 
-Using indexing, pagination, and caching helps improve notification query performance and reduces database load when the system scales to large numbers of users and notifications.
+Indexing, pagination, and caching make it possible to optimize notifications’ queries and minimize the load on the database when it gets larger.
